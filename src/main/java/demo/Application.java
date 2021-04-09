@@ -19,7 +19,7 @@ public class Application implements WebApplicationInitializer {
 
     /**
      * If running using Jetty Runner:
-     * Main-class: com.nomura.fid.core.web.JettyRunner
+     * Main-class: JettyRunner
      * VM options: -Dactivepivot.license=[Path to licence file]
      * Program args: -webapp target\active-pivot-demo-1.0-SNAPSHOT.war -port 8080 -context /demo
      */
