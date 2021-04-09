@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.nomura.rcit.monju</groupId>
+    <artifactId>active-pivot-demo</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <name>active-pivot-demo</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <activepivot.server.version>5.8.16-jdk8</activepivot.server.version>
+        <javax.servlet.api.version>3.1.0</javax.servlet.api.version>
+        <junit.version>4.11</junit.version>
+        <activepivot.license/>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- import dependencies specifications related to core product ActivePivot Server POM -->
+            <dependency>
+                <groupId>com.activeviam.activepivot</groupId>
+                <artifactId>activepivot-server-spring</artifactId>
+                <version>${activepivot.server.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- ActiveViam dependencies -->
+            <dependency>
+                <groupId>com.activeviam.tech</groupId>
+                <artifactId>composer-impl</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>com.activeviam.tech</groupId>
+                <artifactId>composer-api</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>com.activeviam.tech</groupId>
+                <artifactId>content-server-storage</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>com.activeviam.web</groupId>
+                <artifactId>activeviam-web-spring</artifactId>
+            </dependency>
+
+            <dependency>
+                <!-- required to avoid pollution by concrete logging frameworks transitively
+                    pulled from library dependency -->
+                <groupId>quartetfs.biz.pivot</groupId>
+                <artifactId>activepivot-server-spring</artifactId>
+                <version>${activepivot.server.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- required for compilation here, but ultimately provided by servlet container at runtime -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${javax.servlet.api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Runtime -->
+            <dependency>
+                <groupId>com.nomura.fid.core</groupId>
+                <artifactId>jetty-runner</artifactId>
+                <version>1.2.0</version>
+            </dependency>
+
+            <!-- Testing -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.activeviam.activepivot</groupId>
+            <artifactId>activepivot-server-spring</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.nomura.fid.core</groupId>
+            <artifactId>jetty-runner</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+            <plugins>
+                <plugin>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+                <!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.0.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.7.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.20.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.0.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>2.5.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.8.2</version>
+                </plugin>
+                <!-- WAR packaging (we tell Maven not to bother about web.xml not being present) -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <configuration>
+                        <failOnMissingWebXml>false</failOnMissingWebXml>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>1.6.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>demo.Application</mainClass>
+                    <systemProperties>
+                        <systemProperty>
+                            <key>activepivot.license</key>
+                            <value>${activepivot.license}</value>
+                        </systemProperty>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
